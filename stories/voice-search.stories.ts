@@ -206,4 +206,4 @@ storiesOf('VoiceSearch', module)
         })
       );
     })
-  )
+  );

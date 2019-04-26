@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { render } from 'preact-compat';
 import { SearchResults, SearchParameters } from 'algoliasearch-helper';
 import voiceSearch from '../voice-search';

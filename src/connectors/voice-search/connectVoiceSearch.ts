@@ -22,7 +22,9 @@ const withUsage = createDocumentationMessageGenerator({
 export type VoiceSearchConnectorParams = {
   searchAsYouSpeak: boolean;
   language?: string;
-  additionalQueryParameters?: ({ query: string }) => Partial<SearchParameters> | void;
+  additionalQueryParameters?: ({
+    query: string,
+  }) => Partial<SearchParameters> | void;
 };
 
 export interface VoiceSearchRenderOptions<T> extends RenderOptions<T> {
@@ -89,7 +91,9 @@ const connectVoiceSearch: VoiceSearchConnector = (
             if (query !== helper.state.query) {
               previousQuery = helper.state.query;
               if (typeof additionalQueryParameters === 'function') {
-                const queryLanguages = language ? [language.split('-')[0]] : undefined;
+                const queryLanguages = language
+                  ? [language.split('-')[0]]
+                  : undefined;
                 helper.setState(
                   helper.state.setQueryParameters({
                     queryLanguages,

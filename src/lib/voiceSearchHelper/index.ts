@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const STATUS_INITIAL = 'initial';
 const STATUS_ASKING_PERMISSION = 'askingPermission';
 const STATUS_WAITING = 'waiting';
