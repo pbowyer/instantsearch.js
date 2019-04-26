@@ -41,8 +41,8 @@ type VoiceSearchWidgetParams = {
   templates?: Partial<VoiceSearchTemplates>;
   searchAsYouSpeak?: boolean;
   language?: string;
-  additionalQueryParameters?: ({
-    query: string,
+  additionalQueryParameters?: (params: {
+    query: string;
   }) => Partial<SearchParameters> | void;
 };
 

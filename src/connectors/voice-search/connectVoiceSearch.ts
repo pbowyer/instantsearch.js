@@ -22,8 +22,8 @@ const withUsage = createDocumentationMessageGenerator({
 export type VoiceSearchConnectorParams = {
   searchAsYouSpeak: boolean;
   language?: string;
-  additionalQueryParameters?: ({
-    query: string,
+  additionalQueryParameters?: (params: {
+    query: string;
   }) => Partial<SearchParameters> | void;
 };
 
