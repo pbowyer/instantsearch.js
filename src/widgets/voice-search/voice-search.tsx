@@ -10,7 +10,7 @@ import connectVoiceSearch, {
 } from '../../connectors/voice-search/connectVoiceSearch';
 import VoiceSearch from '../../components/VoiceSearch/VoiceSearch';
 import defaultTemplates from './defaultTemplates';
-import { WidgetFactory, Template } from '../../types';
+import { WidgetFactory, Template, SearchParameters } from '../../types';
 
 const withUsage = createDocumentationMessageGenerator({ name: 'voice-search' });
 const suit = component('VoiceSearch');
@@ -40,6 +40,10 @@ type VoiceSearchWidgetParams = {
   cssClasses?: Partial<VoiceSearchCSSClasses>;
   templates?: Partial<VoiceSearchTemplates>;
   searchAsYouSpeak?: boolean;
+  language?: string;
+  additionalQueryParameters?: ({
+    query: string,
+  }) => Partial<SearchParameters> | void;
 };
 
 interface VoiceSearchRendererWidgetParams extends VoiceSearchWidgetParams {
@@ -78,6 +82,8 @@ const voiceSearch: VoiceSearch = (
     cssClasses: userCssClasses = {} as VoiceSearchCSSClasses,
     templates,
     searchAsYouSpeak = false,
+    language,
+    additionalQueryParameters,
   } = {} as VoiceSearchWidgetParams
 ) => {
   if (!container) {
@@ -101,6 +107,8 @@ const voiceSearch: VoiceSearch = (
     cssClasses,
     templates: { ...defaultTemplates, ...templates },
     searchAsYouSpeak,
+    language,
+    additionalQueryParameters,
   });
 };
 

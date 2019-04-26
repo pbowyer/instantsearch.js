@@ -3,7 +3,12 @@ import {
   checkRendering,
   createDocumentationMessageGenerator,
 } from '../../lib/utils';
-import { Renderer, RenderOptions, WidgetFactory } from '../../types';
+import {
+  Renderer,
+  RenderOptions,
+  WidgetFactory,
+  SearchParameters,
+} from '../../types';
 import voiceSearchHelper, {
   VoiceListeningState,
   ToggleListening,
@@ -16,6 +21,8 @@ const withUsage = createDocumentationMessageGenerator({
 
 export type VoiceSearchConnectorParams = {
   searchAsYouSpeak: boolean;
+  language?: string;
+  additionalQueryParameters?: ({ query: string }) => Partial<SearchParameters> | void;
 };
 
 export interface VoiceSearchRenderOptions<T> extends RenderOptions<T> {
@@ -68,7 +75,11 @@ const connectVoiceSearch: VoiceSearchConnector = (
       );
     };
 
-    const { searchAsYouSpeak } = widgetParams;
+    const {
+      searchAsYouSpeak,
+      language,
+      additionalQueryParameters,
+    } = widgetParams;
 
     return {
       init({ helper, instantSearchInstance }) {
@@ -77,6 +88,18 @@ const connectVoiceSearch: VoiceSearchConnector = (
           const setQueryAndSearch = (query: string) => {
             if (query !== helper.state.query) {
               previousQuery = helper.state.query;
+              if (typeof additionalQueryParameters === 'function') {
+                const queryLanguages = language ? [language.split('-')[0]] : undefined;
+                helper.setState(
+                  helper.state.setQueryParameters({
+                    queryLanguages,
+                    ignorePlurals: true,
+                    removeStopWords: true,
+                    optionalWords: query,
+                    ...additionalQueryParameters({ query }),
+                  })
+                );
+              }
               helper.setQuery(query);
             }
             if (
@@ -90,6 +113,7 @@ const connectVoiceSearch: VoiceSearchConnector = (
         })();
         (this as any)._voiceSearchHelper = voiceSearchHelper({
           searchAsYouSpeak,
+          language,
           onQueryChange: query => (this as any)._refine(query),
           onStateChange: () => {
             render({
@@ -114,7 +138,25 @@ const connectVoiceSearch: VoiceSearchConnector = (
       },
       dispose({ state }) {
         unmountFn();
-        return state.setQuery('');
+        let newState = state;
+        if (typeof additionalQueryParameters === 'function') {
+          const additional = additionalQueryParameters({ query: '' });
+          const toReset = additional
+            ? Object.keys(additional).reduce((acc, current) => {
+                acc[current] = undefined;
+                return acc;
+              }, {})
+            : {};
+          newState = state.setQueryParameters({
+            queryLanguages: undefined,
+            ignorePlurals: undefined,
+            removeStopWords: undefined,
+            optionalWords: undefined,
+            ...toReset,
+          });
+        }
+
+        return newState.setQuery('');
       },
       getWidgetState(uiState, { searchParameters }) {
         const query = searchParameters.query;
